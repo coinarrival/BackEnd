@@ -36,7 +36,8 @@ before_script:
 
 # test script
 script:
-  python manager.py test
+  - cd BackEnd
+  - python manage.py test
 
 # toggle branch
 branches:
