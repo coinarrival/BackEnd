@@ -21,7 +21,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'f)62z1m3id!yc^(-7*xcbuz@(x@t!*opufo(z*vja-#ls1hjhg'
-
+# TODO enable crypto
+ENABLE_CRYPTO = False
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -31,6 +32,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'account_info.apps.AccountInfoConfig', 
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -43,7 +45,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    # 'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -73,10 +75,25 @@ WSGI_APPLICATION = 'BackEnd.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#     }
+# }
+
+
+import pymysql          
+pymysql.install_as_MySQLdb()
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.mysql',   # 数据库引擎
+        'NAME': 'coin_arrival',  # 数据库名，先前创建的
+        'USER': 'root',     # 用户名，可以自己创建用户
+        'PASSWORD': 'root',  # 密码
+        'HOST': '127.0.0.1',  # mysql服务所在的主机ip
+        'PORT': '3306',         # mysql服务端口
     }
 }
 
