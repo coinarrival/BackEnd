@@ -34,7 +34,8 @@ def index(request):
 def verification(request):
     res_text = {}
     try:
-        raw_string = decrypt(request.POST['account'])
+        # raw_string = decrypt(request.POST['account'])
+        raw_string = decrypt(str(request.body, 'utf-8'))
         content = json.loads(raw_string)
         tusername = content['username']
         tpassword = content['password']
@@ -67,7 +68,8 @@ def operate_account_info(request):
         
     elif request.method == 'POST':
         try:
-            raw_string = decrypt(request.POST['account'])
+            # raw_string = decrypt(request.POST['account'])
+            raw_string = decrypt(str(request.body, 'utf-8'))
             content = json.loads(raw_string)
             tusername = content['username']
             tpassword = content['password']
@@ -98,7 +100,8 @@ def operate_account_info(request):
 
 def registration(request):
     try:
-        raw_string = decrypt(request.POST['account'])
+        # raw_string = decrypt(request.POST['account'])
+        raw_string = decrypt(str(request.body, 'utf-8'))
         content = json.loads(raw_string)
         tusername = content['username']
         tpassword = content['password']
