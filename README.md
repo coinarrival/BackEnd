@@ -1,5 +1,7 @@
 # BackEnd
 
+[![Build Status](https://travis-ci.org/coinarrival/BackEnd.svg?branch=master)](https://travis-ci.org/coinarrival/BackEnd)
+
 Back-end project for Coin Arrival
 
 ## 环境需求

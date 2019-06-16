@@ -1,0 +1,55 @@
+# sudo requirement
+sudo: required
+
+# repo language
+language: python
+
+# language version
+python:
+  - '3.6'
+
+# external service
+services:
+  - mysql:5.7
+
+# specific mysql version
+addons:
+  apt:
+    sources:
+      - mysql-5.7-trusty
+    packages:
+      - mysql-server
+      - mysql-client
+
+# configure environment
+before-install:
+  - sudo mysql -e 'CREATE DATABASE IF NOT EXISTS coin_arrival';
+
+# dependency installation
+install:
+  pip install -r requirements.txt
+
+# configure environment
+before_script:
+  - echo "USE mysql;\nUPDATE user SET password=PASSWORD('root') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
+  - sudo service mysql restart
+
+# test script
+script:
+  - cd BackEnd
+  - python manage.py test
+
+# toggle branch
+branches:
+  only:
+   - master
+
+# notification settings
+notifications:
+  email:
+    recipients:
+      - xuwy27@mail2.sysu.edu.cn
+      - hongzc@mail2.sysu.edu.cn
+      - zhangshanfen9@foxmail.com
+    on_success: never # default: change
+    on_failure: always # default: always
