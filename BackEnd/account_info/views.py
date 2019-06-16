@@ -16,7 +16,8 @@ def dealResponse(status_code, res_text={}):
     dic = {
         400 : 'Decode Failed',
         406 : 'Verification Failed',
-        200 : 'Successed',
+        200 : 'Standard Successed',
+        201 : 'Create Resource Successed',
         409 : 'Confict Field', 
         500 : 'Unknown Server Error',
         404 : 'Not Exist'
@@ -109,7 +110,7 @@ def operate_account_info(request):
                 test = None
             if test:
                 return dealResponse(409, {'data':{'which':'phone'}})
-        return dealResponse(200)
+        return dealResponse(201)
     else:
         return dealResponse(400)
 
@@ -148,4 +149,4 @@ def registration(request):
             test = None
         if test:
             return dealResponse(409, {'data':{'which':'phone'}})
-    return dealResponse(200)
+    return dealResponse(201)
