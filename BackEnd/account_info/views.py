@@ -59,10 +59,13 @@ def operate_account_info(request):
         except account_info.DoesNotExist:
             return dealResponse(404)
         res_text = {
-            'username' : tusername,
-            'password' : result.password, 
-            'email' : result.email,
-            'avatar' : result.avatar,
+            'data':{
+                'username' : tusername,
+                'password' : result.password, 
+                'email' : result.email,
+                'phone' : result.phone, 
+                'avatar' : result.avatar,
+            }
         }
         return dealResponse(200, res_text)
         
@@ -93,7 +96,19 @@ def operate_account_info(request):
             result.password = tpassword
             result.save()
         except IntegrityError:
-            return dealResponse(409)
+            try:
+                test = account_info.objects.get(email=temail)
+            except account_info.DoesNotExist:
+                test = None
+            if test:
+                return dealResponse(409, {'data':{'which':'email'}})
+
+            try:
+                test = account_info.objects.get(phone=tphone)
+            except account_info.DoesNotExist:
+                test = None
+            if test:
+                return dealResponse(409, {'data':{'which':'phone'}})
         return dealResponse(200)
     else:
         return dealResponse(400)
@@ -105,11 +120,32 @@ def registration(request):
         content = json.loads(raw_string)
         tusername = content['username']
         tpassword = content['password']
+        temail = content['email']
+        tphone = content['phone']
     except:
         return dealResponse(400)
     try:
-        account = account_info(username=tusername, password=tpassword)
+        account = account_info(username=tusername, password=tpassword, email=temail, phone=tphone)
         account.save()
     except IntegrityError:
-        return dealResponse(409)
+        try:
+            test = account_info.objects.get(username=tusername)
+        except account_info.DoesNotExist:
+            test = None
+        if test:
+            return dealResponse(409, {'data':{'which':'username'}})
+
+        try:
+            test = account_info.objects.get(email=temail)
+        except account_info.DoesNotExist:
+            test = None
+        if test:
+            return dealResponse(409, {'data':{'which':'email'}})
+
+        try:
+            test = account_info.objects.get(phone=tphone)
+        except account_info.DoesNotExist:
+            test = None
+        if test:
+            return dealResponse(409, {'data':{'which':'phone'}})
     return dealResponse(200)
