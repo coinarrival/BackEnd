@@ -10,7 +10,7 @@ python:
 
 # external service
 services:
-  - mysql:5.7
+  - mysql
 
 # specific mysql version
 addons:
@@ -22,8 +22,8 @@ addons:
       - mysql-client
 
 # configure environment
-before-install:
-  - sudo mysql -e 'CREATE DATABASE IF NOT EXISTS coin_arrival';
+before_install:
+  - mysql -e 'CREATE DATABASE IF NOT EXISTS coin_arrival'
 
 # dependency installation
 install:
@@ -51,7 +51,5 @@ notifications:
   email:
     recipients:
       - xuwy27@mail2.sysu.edu.cn
-      - hongzc@mail2.sysu.edu.cn
-      - zhangshanfen9@foxmail.com
     on_success: never # default: change
     on_failure: always # default: always
