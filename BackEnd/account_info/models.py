@@ -1,24 +1,29 @@
 from django.db import models
 # Create your models here.
 string_max_length = 200
-class account_info(models.Model):
-    username = models.CharField(max_length=string_max_length, unique=True)
-    email = models.CharField(max_length=string_max_length, unique=True)
-    phone = models.CharField(max_length=string_max_length, unique=True)
-    password = models.CharField(max_length=string_max_length)
-    avatar = models.CharField(max_length=string_max_length, default='')
+# class account_info(models.Model):
+#     username = models.CharField(max_length=string_max_length, unique=True)
+#     email = models.CharField(max_length=string_max_length, unique=True)
+#     phone = models.CharField(max_length=string_max_length, unique=True)
+#     password = models.CharField(max_length=string_max_length)
+#     avatar = models.CharField(max_length=string_max_length, default='')
 
 
 class User(models.Model):
     userID = models.AutoField(unique=True, primary_key=True)
-    userName = models.CharField(max_length=100, unique=True)
-    gender = models.BooleanField()
-    email = models.CharField(max_length=50)
-    phone = models.CharField(max_length=15)
-    school = models.CharField(max_length=50)
-    major = models.CharField(max_length=30)
-    age = models.IntegerField()
+    username = models.CharField(max_length=100, unique=True)
+    gender = models.CharField(max_length=30, null=True)
+    email = models.CharField(max_length=50, unique=True)
+    phone = models.CharField(max_length=15, unique=True)
+    school = models.CharField(max_length=50, null=True)
+    major = models.CharField(max_length=30, null=True)
+    age = models.IntegerField(null=True)
+    role = models.CharField(max_length=30, null=True)
+    studentID = models.CharField(max_length=30, null=True)
+    teacherID = models.CharField(max_length=30, null=True)
+    grade = models.CharField(max_length=30, null=True)
     password = models.CharField(max_length=30)
+    avatar = models.CharField(max_length=300, null=True)
 
 class Wallet(models.Model):
     walletID = models.AutoField(unique=True, primary_key=True)
