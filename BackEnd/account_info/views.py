@@ -24,6 +24,7 @@ def dealResponse(status_code, res_text={}):
         500 : 'Unknown Server Error',
         404 : 'Not Exist', 
         416 : 'OutOfRange', 
+        401 : 'Unauthorized', 
     }
     traceback.print_exc()
     print('[+] ' + dic[status_code])
@@ -296,6 +297,22 @@ def operate_task(request):
     #     result.isCompleted = True
     #     result.save()
         # return dealResponse(200) 
+
+def task_finished(request):
+    try:
+        id = decrypt(request.POST['taskID'])
+        username = decrypt(request.POST['issuer'])
+    except:
+        return dealResponse(400)
+    try:
+        result = Task.objects.get(taskID=id)
+    except Task.DoesNotExist:
+        return dealResponse(404)
+    if result.issuer.username != username:
+        return dealResponse(401) 
+    result.isCompleted = True
+    result.save()
+    return dealResponse(200) 
 
 def get_tasks(request):
     try:

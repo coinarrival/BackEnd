@@ -10,4 +10,5 @@ urlpatterns = [
     path('balance', views.get_balance, name='balance'), 
     path('task', views.operate_task, name='task'), 
     path('tasks', views.get_tasks, name='tasks'), 
+    path('task_finished', views.task_finished, name='task_finished'), 
 ]
