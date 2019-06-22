@@ -362,3 +362,51 @@ def get_tasks(request):
       }
         resp['data']['tasks'].append(oner)
     return dealResponse(200, resp) 
+
+"""
+def operate_accepted_tasks(request):
+    if request.method == 'GET':
+        try:
+            id = decrypt(request.GET['taskID'])
+        except:
+            return dealResponse(400)
+        try:
+            result = Task.objects.get(taskID=id)
+        except Task.DoesNotExist:
+            return dealResponse(404)
+        res_text = {
+            'data':{
+                'title' : result.title, 
+                'content' : result.content, 
+                'type' : result.types, 
+                'issuer' : result.issuer.username, 
+                'reward' : result.reward, 
+                'deadline' : result.deadline, 
+                'repeatTime' : result.repeatTime, 
+                'isCompleted' : result.isCompleted, 
+            }
+        }
+        return dealResponse(200, res_text)  
+    elif request.method == 'POST':
+        try:
+            raw_string = decrypt(str(request.body, 'utf-8'))
+            content = json.loads(raw_string)
+            ttitle = content['title']
+            tcontent = content['content']
+            ttype = content['type']
+            tissuer = content['issuer']
+            treward = content['reward']
+            trepeatTime = content['repeatTime']
+            tdeadline = content['deadline']
+        except:
+            return dealResponse(400)
+        try:
+            user = User.objects.get(username=tissuer)
+        except User.DoesNotExist:
+            return dealResponse(404)
+        task = Task(title=ttitle, content=tcontent, types=ttype,\
+            issuer=user, reward=treward, repeatTime=trepeatTime,\
+                deadline=tdeadline, )
+        task.save()
+        return dealResponse(201)
+"""
