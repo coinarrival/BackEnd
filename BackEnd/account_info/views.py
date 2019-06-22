@@ -8,6 +8,7 @@ from .models import *
 from django.db.utils import IntegrityError
 from django.db.models import F
 from .crypto import *
+import math
 
 # Create your views here.
 MAX_PAGE_ITEMS = 2
@@ -21,7 +22,8 @@ def dealResponse(status_code, res_text={}):
         201 : 'Create Resource Successed',
         409 : 'Confict Field', 
         500 : 'Unknown Server Error',
-        404 : 'Not Exist'
+        404 : 'Not Exist', 
+        416 : 'OutOfRange', 
     }
     traceback.print_exc()
     print('[+] ' + dic[status_code])
@@ -295,15 +297,51 @@ def operate_task(request):
     #     result.save()
         # return dealResponse(200) 
 
-# def get_tasks(request):
-#     # try:
-#     page = decrypt(request.GET['page'])
-#     title = decrypt(request.GET.get('title', default=''))
-#     issuer = decrypt(request.GET.get('issuer', default=''))
-#     content = decrypt(request.GET.get('content', default=''))
-#     isComplete = decrypt(request.GET.get('isComplete', default=''))
-#     dic = {'page' : page}
-#     if title != '':
-#         dic['title'] = title
-#     if issuer != '':
-#         dic['issuer'] = 
+def get_tasks(request):
+    try:
+        page = int(decrypt(request.GET['page']))
+        title = decrypt(request.GET.get('title', default=''))
+        types = decrypt(request.GET.get('type', default=''))
+        issuer = decrypt(request.GET.get('issuer', default=''))
+        content = decrypt(request.GET.get('content', default=''))
+        isComplete = decrypt(request.GET.get('isComplete', default=''))
+    except:
+        return dealResponse(400)
+    dic = {}
+    if title != '':
+        dic['title'] = title
+    if types != '':
+        dic['types'] = types
+    if issuer != '':
+        dic['issuer'] = issuer
+    if content != '':
+        dic['content'] = content
+    if isComplete != '':
+        dic['isComplete'] = isComplete
+    result = Task.objects.filter(**dic)
+    # for item in result:
+    #     print(item.taskID)
+    max_pages = math.ceil(float(len(result)) / MAX_PAGE_ITEMS)
+    if page >= max_pages:
+        return dealResponse(416)
+    resp = {"data" : {
+            "tasks" : [], 
+            "max_pages" : max_pages
+        }
+    }
+    startid = page * MAX_PAGE_ITEMS
+    endid = min(len(result), (page+1)*MAX_PAGE_ITEMS)
+    for i in range(startid, endid):
+        oner =  {
+        "taskID": result[i].taskID,
+        "title": result[i].title,
+        "content": result[i].content,
+        "type": result[i].types,
+        "issuer": result[i].issuer.username,
+        "reward": result[i].reward,
+        "deadline": result[i].deadline,
+        "repeatTime": result[i].repeatTime, 
+        "isCompleted": result[i].isCompleted, 
+      }
+        resp['data']['tasks'].append(oner)
+    return dealResponse(200, resp) 

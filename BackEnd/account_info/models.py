@@ -36,7 +36,7 @@ class Task(models.Model):
     content = models.CharField(max_length=300)
     types = models.IntegerField()
     issuer = models.ForeignKey(User, on_delete=models.CASCADE)
-    reward = models.IntegerField()
+    reward = models.FloatField()
     deadline = models.CharField(max_length=50)
     repeatTime = models.IntegerField()
     isCompleted = models.BooleanField(default=False)
