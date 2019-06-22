@@ -10,6 +10,7 @@ from django.db.models import F
 from .crypto import *
 
 # Create your views here.
+MAX_PAGE_ITEMS = 2
 
 def dealResponse(status_code, res_text={}):
     traceback.print_exc()
@@ -185,8 +186,11 @@ def registration(request):
     except:
         return dealResponse(400)
     try:
-        account = User(username=tusername, password=tpassword, email=temail, phone=tphone)
+        account = User(username=tusername, password=tpassword, \
+            email=temail, phone=tphone,)
         account.save()
+        user_wallet = Wallet(balance=0, user=account)
+        user_wallet.save()
     except IntegrityError:
         try:
             test = User.objects.get(username=tusername)
@@ -208,6 +212,98 @@ def registration(request):
             test = None
         if test:
             return dealResponse(409, {'data':{'which':'phone'}})
-    except:
-        return dealResponse(500)
     return dealResponse(201)
+
+def get_balance(request):
+    try:
+        tusername = decrypt(request.GET['username'])
+    except:
+        return dealResponse(400)
+    try:
+        result = User.objects.get(username=tusername)
+    except User.DoesNotExist:
+        return dealResponse(404)
+    return dealResponse(200, {'data':{'balance':result.wallet_set.first().balance}})
+
+
+def operate_task(request):
+    # if not request.method == 'GET' and not request.method == 'POST':
+    #     put = QueryDict(request.body)
+    #     id = put.get('taskID')
+    #     username = put.get('issuer')
+    #     print(put)
+    #     print(id)
+    #     print(username)
+    #     return dealResponse(200) 
+    if request.method == 'GET':
+        try:
+            id = decrypt(request.GET['taskID'])
+        except:
+            return dealResponse(400)
+        try:
+            result = Task.objects.get(taskID=id)
+        except Task.DoesNotExist:
+            return dealResponse(404)
+        res_text = {
+            'data':{
+                'title' : result.title, 
+                'content' : result.content, 
+                'type' : result.types, 
+                'issuer' : result.issuer.username, 
+                'reward' : result.reward, 
+                'deadline' : result.deadline, 
+                'repeatTime' : result.repeatTime, 
+                'isCompleted' : result.isCompleted, 
+            }
+        }
+        return dealResponse(200, res_text)  
+    elif request.method == 'POST':
+        try:
+            raw_string = decrypt(str(request.body, 'utf-8'))
+            content = json.loads(raw_string)
+            ttitle = content['title']
+            tcontent = content['content']
+            ttype = content['type']
+            tissuer = content['issuer']
+            treward = content['reward']
+            trepeatTime = content['repeatTime']
+            tdeadline = content['deadline']
+        except:
+            return dealResponse(400)
+        try:
+            user = User.objects.get(username=tissuer)
+        except User.DoesNotExist:
+            return dealResponse(404)
+        task = Task(title=ttitle, content=tcontent, types=ttype,\
+            issuer=user, reward=treward, repeatTime=trepeatTime,\
+                deadline=tdeadline, )
+        task.save()
+        return dealResponse(201)
+    # elif request.method == 'DELETE':
+    #     try:
+    #         id = decrypt(request.DELETE['taskID'])
+    #         username = decrypt(request.DELETE['issuer'])
+    #     except:
+    #         return dealResponse(400)
+    #     try:
+    #         result = Task.objects.get(taskID=id)
+    #     except Task.DoesNotExist:
+    #         return dealResponse(404)
+    #     if result.issuer.username != username:
+    #         return dealResponse(401) 
+    #     result.isCompleted = True
+    #     result.save()
+        # return dealResponse(200) 
+
+# def get_tasks(request):
+#     # try:
+#     page = decrypt(request.GET['page'])
+#     title = decrypt(request.GET.get('title', default=''))
+#     issuer = decrypt(request.GET.get('issuer', default=''))
+#     content = decrypt(request.GET.get('content', default=''))
+#     isComplete = decrypt(request.GET.get('isComplete', default=''))
+#     dic = {'page' : page}
+#     if title != '':
+#         dic['title'] = title
+#     if issuer != '':
+#         dic['issuer'] = 
