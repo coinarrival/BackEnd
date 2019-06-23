@@ -46,3 +46,4 @@ class AcceptTask(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     task = models.ForeignKey(Task, on_delete=models.CASCADE)
     isFinished = models.BooleanField()
+    answer = models.CharField(max_length=300, null=True)

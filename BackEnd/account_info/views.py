@@ -20,7 +20,7 @@ def dealResponse(status_code, res_text={}):
         406 : 'Verification Failed',
         200 : 'Standard Successed',
         201 : 'Create Resource Successed',
-        409 : 'Confict Field', 
+        409 : 'Confict Field or MultipleAcceptance', 
         500 : 'Unknown Server Error',
         404 : 'Not Exist', 
         416 : 'OutOfRange', 
@@ -340,7 +340,7 @@ def get_tasks(request):
     #     print(item.taskID)
     max_pages = math.ceil(float(len(result)) / MAX_PAGE_ITEMS)
     if page >= max_pages:
-        return dealResponse(416)
+        return dealResponse(416, {"data": {"max_pages": max_pages}})
     resp = {"data" : {
             "tasks" : [], 
             "max_pages" : max_pages
@@ -363,50 +363,63 @@ def get_tasks(request):
         resp['data']['tasks'].append(oner)
     return dealResponse(200, resp) 
 
-"""
 def operate_accepted_tasks(request):
     if request.method == 'GET':
         try:
-            id = decrypt(request.GET['taskID'])
+            page = int(decrypt(request.GET['page']))
+            tusername = request.GET['username']
         except:
             return dealResponse(400)
         try:
-            result = Task.objects.get(taskID=id)
-        except Task.DoesNotExist:
+            fuser = User.objects.get(username=tusername)
+        except User.DoesNotExist:
             return dealResponse(404)
-        res_text = {
-            'data':{
-                'title' : result.title, 
-                'content' : result.content, 
-                'type' : result.types, 
-                'issuer' : result.issuer.username, 
-                'reward' : result.reward, 
-                'deadline' : result.deadline, 
-                'repeatTime' : result.repeatTime, 
-                'isCompleted' : result.isCompleted, 
+        result = AcceptTask.objects.filter(user=fuser)
+        max_pages = math.ceil(float(len(result)) / MAX_PAGE_ITEMS)
+        if page >= max_pages:
+            return dealResponse(416, {"data": {"max_pages": max_pages}})
+        resp = {"data" : {
+                "tasks" : [], 
+                "max_pages" : max_pages
             }
         }
-        return dealResponse(200, res_text)  
+        startid = page * MAX_PAGE_ITEMS
+        endid = min(len(result), (page+1)*MAX_PAGE_ITEMS)
+        for i in range(startid, endid):
+            thetask = result[i].task
+            oner =  {
+            "taskID": thetask.taskID,
+            "title": thetask.title,
+            "content": thetask.content,
+            "type": thetask.types,
+            "issuer": thetask.issuer.username,
+            "reward": thetask.reward,
+            "deadline": thetask.deadline,
+            "repeatTime": thetask.repeatTime, 
+            "isCompleted": thetask.isCompleted, 
+        }
+            resp['data']['tasks'].append(oner)
+        return dealResponse(200, resp) 
     elif request.method == 'POST':
         try:
             raw_string = decrypt(str(request.body, 'utf-8'))
             content = json.loads(raw_string)
-            ttitle = content['title']
-            tcontent = content['content']
-            ttype = content['type']
-            tissuer = content['issuer']
-            treward = content['reward']
-            trepeatTime = content['repeatTime']
-            tdeadline = content['deadline']
+            tusername = content['username']
+            ttaskid = content['taskID']
+            tanswer = None
+            if 'answer' in content:
+                tanswer = content['answer']
         except:
             return dealResponse(400)
         try:
-            user = User.objects.get(username=tissuer)
-        except User.DoesNotExist:
+            nuser = User.objects.get(username=tusername)
+            ntask = Task.objects.get(taskID=ttaskid)
+        except User.DoesNotExist or Task.DoesNotExist:
             return dealResponse(404)
-        task = Task(title=ttitle, content=tcontent, types=ttype,\
-            issuer=user, reward=treward, repeatTime=trepeatTime,\
-                deadline=tdeadline, )
-        task.save()
+        testask = AcceptTask.objects.filter(user=nuser, task=ntask)
+        if len(testask) != 0:
+            return dealResponse(409)
+        aptask = AcceptTask(user=nuser, task=ntask, \
+            answer=tanswer, isFinished=False)
+        aptask.save()
         return dealResponse(201)
-"""
