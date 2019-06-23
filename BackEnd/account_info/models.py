@@ -34,7 +34,7 @@ class Task(models.Model):
     taskID = models.AutoField(unique=True, primary_key=True)
     title = models.CharField(max_length=50)
     content = models.CharField(max_length=300)
-    types = models.IntegerField()
+    types = models.CharField(max_length=50)
     issuer = models.ForeignKey(User, on_delete=models.CASCADE)
     reward = models.FloatField()
     deadline = models.CharField(max_length=50)

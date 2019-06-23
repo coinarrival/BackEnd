@@ -93,8 +93,6 @@ def operate_account_info(request):
             # raw_string = decrypt(request.POST['account'])
             raw_string = decrypt(str(request.body, 'utf-8'))
             content = json.loads(raw_string)
-
-
             tusername = content['username']
             tpassword = tgender = temail = tphone = tschool = tmajor = \
                 tage = trole = tstudentID = tgrade = \
@@ -229,7 +227,6 @@ def get_balance(request):
         return dealResponse(404)
     return dealResponse(200, {'data':{'balance':result.wallet_set.first().balance}})
 
-
 def operate_task(request):
     # if not request.method == 'GET' and not request.method == 'POST':
     #     put = QueryDict(request.body)
@@ -361,7 +358,7 @@ def get_tasks(request):
         "reward": result[i].reward,
         "deadline": result[i].deadline,
         "repeatTime": result[i].repeatTime, 
-        "isCompleted": result[i].isCompleted, 
+        # "isCompleted": result[i].isCompleted,
       }
         resp['data']['tasks'].append(oner)
     return dealResponse(200, resp) 
@@ -370,7 +367,7 @@ def operate_accepted_tasks(request):
     if request.method == 'GET':
         try:
             page = int(decrypt(request.GET['page']))
-            tusername = request.GET['username']
+            tusername = decrypt(request.GET['username'])
         except:
             return dealResponse(400)
         try:
@@ -399,7 +396,7 @@ def operate_accepted_tasks(request):
             "reward": thetask.reward,
             "deadline": thetask.deadline,
             "repeatTime": thetask.repeatTime, 
-            "isCompleted": thetask.isCompleted, 
+            "isFinished": result[i].isFinished, 
         }
             resp['data']['tasks'].append(oner)
         return dealResponse(200, resp) 
@@ -435,7 +432,7 @@ def operate_created_tasks(request):
     if request.method == 'GET':
         try:
             page = int(decrypt(request.GET['page']))
-            tusername = request.GET['issuer']
+            tusername = decrypt(request.GET['issuer'])
         except:
             return dealResponse(400)
         try:
@@ -495,8 +492,8 @@ def operate_acceptance(request):
     if request.method == 'GET':
         try:
             page = int(decrypt(request.GET['page']))
-            tusername = request.GET['issuer']
-            ttaskID = request.GET['taskID']
+            tusername = decrypt(request.GET['issuer'])
+            ttaskID = decrypt(request.GET['taskID'])
         except:
             return dealResponse(400)
         try:
@@ -543,7 +540,7 @@ def operate_acceptance(request):
         if nissuer != ntask.issuer:
             return dealResponse(401)
         aptask = AcceptTask.objects.get(user=nuser, task=ntask)
-        if aptask.isFinished:
+        if aptask.isFinished or ntask.isCompleted:
             return dealResponse(416)
         aptask.isFinished = True
         aptask.save()
