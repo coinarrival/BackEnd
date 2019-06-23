@@ -11,5 +11,6 @@ urlpatterns = [
     path('task', views.operate_task, name='task'), 
     path('tasks', views.get_tasks, name='tasks'), 
     path('task_removed', views.task_finished, name='task_finished'),
-    path('accepted_tasks', views.operate_accepted_tasks, name='accepted_tasks '),
+    path('accepted_tasks', views.operate_accepted_tasks, name='accepted_tasks'),
+    path('created_tasks', views.operate_created_tasks, name='created_tasks'),
 ]

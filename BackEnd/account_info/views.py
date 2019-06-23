@@ -335,6 +335,8 @@ def get_tasks(request):
         dic['content'] = content
     if isComplete != '':
         dic['isComplete'] = isComplete
+    else:
+        dic['isComplete'] = False
     result = Task.objects.filter(**dic)
     # for item in result:
     #     print(item.taskID)
@@ -423,3 +425,63 @@ def operate_accepted_tasks(request):
             answer=tanswer, isFinished=False)
         aptask.save()
         return dealResponse(201)
+
+def operate_created_tasks(request):
+    if request.method == 'GET':
+        try:
+            page = int(decrypt(request.GET['page']))
+            tusername = request.GET['issuer']
+        except:
+            return dealResponse(400)
+        try:
+            fuser = User.objects.get(username=tusername)
+        except User.DoesNotExist:
+            return dealResponse(404)
+        result = Task.objects.filter(issuer=fuser)
+        max_pages = math.ceil(float(len(result)) / MAX_PAGE_ITEMS)
+        if page >= max_pages:
+            return dealResponse(416, {"data": {"max_pages": max_pages}})
+        resp = {"data" : {
+                "tasks" : [], 
+                "max_pages" : max_pages
+            }
+        }
+        startid = page * MAX_PAGE_ITEMS
+        endid = min(len(result), (page+1)*MAX_PAGE_ITEMS)
+        for i in range(startid, endid):
+            oner =  {
+            "taskID": result[i].taskID,
+            "title": result[i].title,
+            "content": result[i].content,
+            "type": result[i].types,
+            "issuer": result[i].issuer.username,
+            "reward": result[i].reward,
+            "deadline": result[i].deadline,
+            "repeatTime": result[i].repeatTime, 
+            "isFinished": result[i].isCompleted, 
+        }
+            resp['data']['tasks'].append(oner)
+        return dealResponse(200, resp) 
+    elif request.method == 'POST':
+        try:
+            raw_string = decrypt(str(request.body, 'utf-8'))
+            content = json.loads(raw_string)
+            ttaskID = content['taskID']
+            ttitle = content['title']
+            tissuer = content['issuer']
+            treward = content['reward']
+            tdeadline = content['deadline']
+        except:
+            return dealResponse(400)
+        try:
+            task = Task.objects.get(taskID=ttaskID)
+            user = User.objects.get(username=tissuer)
+        except Task.DoesNotExist or User.DoesNotExist:
+            return dealResponse(404)
+        if user != task.issuer:
+            return dealResponse(401)
+        task.title = ttitle
+        task.reward = treward
+        task.deadline = tdeadline
+        task.save()
+        return dealResponse(200)
