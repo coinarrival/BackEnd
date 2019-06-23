@@ -13,4 +13,6 @@ urlpatterns = [
     path('task_removed', views.task_finished, name='task_finished'),
     path('accepted_tasks', views.operate_accepted_tasks, name='accepted_tasks'),
     path('created_tasks', views.operate_created_tasks, name='created_tasks'),
+    path('acceptance', views.operate_acceptance, name='acceptance'),
+    path('acceptance_removed', views.acceptance_removed, name='acceptance_removed'),
 ]
