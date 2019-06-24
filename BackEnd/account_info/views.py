@@ -279,7 +279,7 @@ def operate_task(request):
             issuer=user, reward=treward, repeatTime=trepeatTime,\
                 deadline=tdeadline, )
         task.save()
-        return dealResponse(201)
+        return dealResponse(201, {"data":{"taskID":task.taskID}})
     # elif request.method == 'DELETE':
     #     try:
     #         id = decrypt(request.DELETE['taskID'])
@@ -298,8 +298,12 @@ def operate_task(request):
 
 def task_finished(request):
     try:
-        id = decrypt(request.POST['taskID'])
-        username = decrypt(request.POST['issuer'])
+        # id = decrypt(request.POST['taskID'])
+        # username = decrypt(request.POST['issuer'])
+        raw_string = decrypt(str(request.body, 'utf-8'))
+        content = json.loads(raw_string)
+        id = content['taskID']
+        username = content['issuer']
     except:
         return dealResponse(400)
     try:
@@ -319,7 +323,7 @@ def get_tasks(request):
         types = decrypt(request.GET.get('type', default=''))
         issuer = decrypt(request.GET.get('issuer', default=''))
         content = decrypt(request.GET.get('content', default=''))
-        isComplete = decrypt(request.GET.get('isComplete', default=''))
+        isCompleted = decrypt(request.GET.get('isComplete', default='false'))
     except:
         return dealResponse(400)
     dic = {}
@@ -331,16 +335,21 @@ def get_tasks(request):
         dic['issuer'] = issuer
     if content != '':
         dic['content'] = content
-    if isComplete != '':
-        dic['isComplete'] = isComplete
-    else:
-        dic['isComplete'] = False
+    # if isCompleted != '':
+    #     dic['isCompleted'] = isCompleted
+    # else:
+    #     dic['isCompleted'] = False
+    if isCompleted == 'true':
+        dic['isCompleted'] = True
+    elif isCompleted == 'false':
+        dic['isCompleted'] = False
     result = Task.objects.filter(**dic)
     # for item in result:
     #     print(item.taskID)
     max_pages = math.ceil(float(len(result)) / MAX_PAGE_ITEMS)
-    if page >= max_pages:
+    if page > max_pages or page <= 0:
         return dealResponse(416, {"data": {"max_pages": max_pages}})
+    page = page - 1
     resp = {"data" : {
             "tasks" : [], 
             "max_pages" : max_pages
@@ -376,8 +385,9 @@ def operate_accepted_tasks(request):
             return dealResponse(404)
         result = AcceptTask.objects.filter(user=fuser)
         max_pages = math.ceil(float(len(result)) / MAX_PAGE_ITEMS)
-        if page >= max_pages:
+        if page > max_pages or page <= 0:
             return dealResponse(416, {"data": {"max_pages": max_pages}})
+        page = page - 1
         resp = {"data" : {
                 "tasks" : [], 
                 "max_pages" : max_pages
@@ -419,12 +429,12 @@ def operate_accepted_tasks(request):
         testask = AcceptTask.objects.filter(user=nuser, task=ntask)
         if len(testask) != 0:
             return dealResponse(409)
-        if tanswer != None:
+        if not tanswer is None:
             aptask = AcceptTask(user=nuser, task=ntask, \
-                answer=tanswer, isFinished=False)
+                answer=tanswer, isFinished=True)
         else:
             aptask = AcceptTask(user=nuser, task=ntask, \
-                answer=tanswer, isFinished=True)            
+                answer=tanswer, isFinished=False)            
         aptask.save()
         return dealResponse(201)
 
@@ -441,8 +451,9 @@ def operate_created_tasks(request):
             return dealResponse(404)
         result = Task.objects.filter(issuer=fuser)
         max_pages = math.ceil(float(len(result)) / MAX_PAGE_ITEMS)
-        if page >= max_pages:
+        if page > max_pages or page <= 0:
             return dealResponse(416, {"data": {"max_pages": max_pages}})
+        page = page - 1
         resp = {"data" : {
                 "tasks" : [], 
                 "max_pages" : max_pages
@@ -505,8 +516,9 @@ def operate_acceptance(request):
             return dealResponse(401)
         result = AcceptTask.objects.filter(task=ttask)
         max_pages = math.ceil(float(len(result)) / MAX_PAGE_ITEMS)
-        if page >= max_pages:
+        if page > max_pages or page <= 0:
             return dealResponse(416, {"data": {"max_pages": max_pages}})
+        page = page - 1
         resp = {"data" : {
                 "records" : [], 
                 "max_pages" : max_pages
