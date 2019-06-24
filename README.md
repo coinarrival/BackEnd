@@ -17,14 +17,25 @@ Back-end project for Coin Arrival
 
 ## Usage for Docker familiar User
 
-我们提供了项目的 docker 配置文件 `dockerfile` 和 `docker-compose.yml`，你可以直接通过以下命令启动项目：
+为了项目部署方案的多样性，你首先需要更改项目的数据库配置文件 `BackEnd/settings.py`:
+
+```python
+DATABASES = {
+    'default': {
+        # ...
+        'HOST': 'coin_arrival',  # 与 docker-compose 的数据库服务容器名保持一致
+    }
+}
+```
+
+然后你可以直接通过以下命令启动项目(你当然可以修改 docker 配置文件 `dockerfile` 和 `docker-compose.yml` 来适配自己的需求)：
 
 ```bash
 # running foreground
 docker-compose up # if with -d param it runs background
 ```
 
-然后你可以通过 `curl` 确保项目已经运行在 8000 端口：
+接下来，请通过 `curl` 确保项目已经运行在 8000 端口：
 
 ```bash
 curl http://localhost:8000/tasks?page=1

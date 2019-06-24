@@ -92,7 +92,7 @@ DATABASES = {
         'NAME': 'coin_arrival',  # 数据库名，先前创建的
         'USER': 'root',     # 用户名，可以自己创建用户
         'PASSWORD': 'root',  # 密码
-        'HOST': 'coin_arrival_db',  # mysql服务所在的主机ip
+        'HOST': '127.0.0.1',  # mysql服务所在的主机ip
         'PORT': '3306',         # mysql服务端口
     }
 }
