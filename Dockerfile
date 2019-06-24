@@ -15,4 +15,4 @@ RUN pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 EXPOSE 8000
 
 # Run repo when the container launches
-CMD ["python", "./BackEnd/manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["bash", "start.sh"]
