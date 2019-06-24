@@ -323,7 +323,7 @@ def get_tasks(request):
         types = decrypt(request.GET.get('type', default=''))
         issuer = decrypt(request.GET.get('issuer', default=''))
         content = decrypt(request.GET.get('content', default=''))
-        isCompleted = decrypt(request.GET.get('isComplete', default='false'))
+        isCompleted = decrypt(request.GET.get('isComplete', default=''))
     except:
         return dealResponse(400)
     dic = {}
@@ -335,14 +335,11 @@ def get_tasks(request):
         dic['issuer'] = issuer
     if content != '':
         dic['content'] = content
-    # if isCompleted != '':
-    #     dic['isCompleted'] = isCompleted
-    # else:
-    #     dic['isCompleted'] = False
-    if isCompleted == 'true':
-        dic['isCompleted'] = True
-    elif isCompleted == 'false':
-        dic['isCompleted'] = False
+    if isCompleted != '':
+        if isCompleted == 'true':
+            dic['isCompleted'] = True
+        elif isCompleted == 'false':
+            dic['isCompleted'] = False
     result = Task.objects.filter(**dic)
     # for item in result:
     #     print(item.taskID)
@@ -429,12 +426,12 @@ def operate_accepted_tasks(request):
         testask = AcceptTask.objects.filter(user=nuser, task=ntask)
         if len(testask) != 0:
             return dealResponse(409)
-        if not tanswer is None:
+        if tanswer is None:
             aptask = AcceptTask(user=nuser, task=ntask, \
-                answer=tanswer, isFinished=True)
+                answer=tanswer, isFinished=False)
         else:
             aptask = AcceptTask(user=nuser, task=ntask, \
-                answer=tanswer, isFinished=False)            
+                answer=tanswer, isFinished=True)
         aptask.save()
         return dealResponse(201)
 
