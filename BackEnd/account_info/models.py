@@ -1,4 +1,8 @@
 from django.db import models
+# from account_info.models import User
+# from wallet_info.models import Wallet
+# from task_info.models import Task
+# from accept_task_info.models import AcceptTask
 # Create your models here.
 string_max_length = 200
 # class account_info(models.Model):
@@ -25,25 +29,25 @@ class User(models.Model):
     password = models.CharField(max_length=30)
     avatar = models.CharField(max_length=300, null=True)
 
-class Wallet(models.Model):
-    # walletID = models.AutoField(unique=True, primary_key=True)
-    balance = models.IntegerField()
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+# class Wallet(models.Model):
+#     # walletID = models.AutoField(unique=True, primary_key=True)
+#     balance = models.IntegerField()
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
-class Task(models.Model):
-    taskID = models.AutoField(unique=True, primary_key=True)
-    title = models.CharField(max_length=50)
-    content = models.CharField(max_length=300)
-    types = models.CharField(max_length=50)
-    issuer = models.ForeignKey(User, on_delete=models.CASCADE)
-    reward = models.FloatField()
-    deadline = models.CharField(max_length=50)
-    repeatTime = models.IntegerField()
-    isCompleted = models.BooleanField(default=False)
+# class Task(models.Model):
+#     taskID = models.AutoField(unique=True, primary_key=True)
+#     title = models.CharField(max_length=50)
+#     content = models.CharField(max_length=300)
+#     types = models.CharField(max_length=50)
+#     issuer = models.ForeignKey(User, on_delete=models.CASCADE)
+#     reward = models.FloatField()
+#     deadline = models.CharField(max_length=50)
+#     repeatTime = models.IntegerField()
+#     isCompleted = models.BooleanField(default=False)
 
-class AcceptTask(models.Model):
-    # acceptTaskID = models.AutoField(unique=True, primary_key=True)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    task = models.ForeignKey(Task, on_delete=models.CASCADE)
-    isFinished = models.BooleanField()
-    answer = models.CharField(max_length=300, null=True)
+# class AcceptTask(models.Model):
+#     # acceptTaskID = models.AutoField(unique=True, primary_key=True)
+#     user = models.ForeignKey(User, on_delete=models.CASCADE)
+#     task = models.ForeignKey(Task, on_delete=models.CASCADE)
+#     isFinished = models.BooleanField()
+#     answer = models.CharField(max_length=300, null=True)

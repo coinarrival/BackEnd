@@ -33,6 +33,9 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'account_info.apps.AccountInfoConfig', 
+    'wallet_info.apps.WalletInfoConfig', 
+    'task_info.apps.TaskInfoConfig', 
+    'accept_task_info.apps.AcceptTaskInfoConfig', 
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
