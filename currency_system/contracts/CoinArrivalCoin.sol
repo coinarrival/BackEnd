@@ -1,6 +1,6 @@
-pragma solidity ^0.5.0;
+pragma solidity >=0.4.21 <0.6.0;
 
-import "SafeMath.sol";
+import "./SafeMath.sol";
 
 /**
  * Standard ERC20 token
@@ -43,8 +43,8 @@ contract CoinArrivalCoin is StandardToken {
 		require(to != address(0));
 		require(value <= balanceOf[msg.sender]);
  
-        balanceOf[msg.sender] = sub(balanceOf[msg.sender], value);
-        balanceOf[to] = add(balanceOf[to], value);
+        balanceOf[msg.sender] = SafeMath.sub(balanceOf[msg.sender], value);
+        balanceOf[to] = SafeMath.add(balanceOf[to], value);
         emit Transfer(msg.sender, to, value);
         return true;
     }
@@ -62,9 +62,9 @@ contract CoinArrivalCoin is StandardToken {
         require(value <= balanceOf[from]);
         require(value <= allowed[from][msg.sender]);
  
-        balanceOf[from] = sub(balanceOf[from], value);
-        balanceOf[to] = add(balanceOf[to], value);
-        allowed[from][msg.sender] = sub(allowed[from][msg.sender], value);
+        balanceOf[from] = SafeMath.sub(balanceOf[from], value);
+        balanceOf[to] = SafeMath.add(balanceOf[to], value);
+        allowed[from][msg.sender] = SafeMath.sub(allowed[from][msg.sender], value);
 
         emit Transfer(from, to, value);
 
