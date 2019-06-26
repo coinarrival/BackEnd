@@ -50,7 +50,7 @@ curl http://localhost:8000/tasks?page=1
 启动 MySQL 数据库并在其中创建项目所需数据库
 
 ```bash
-CREATE DATABASE coin_arrival;
+CREATE DATABASE coin_arrival CHARACTER SET utf8 COLLATE utf8_general_ci;
 ```
 
 ### 修改项目配置文件
