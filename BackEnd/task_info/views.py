@@ -16,7 +16,7 @@ from accept_task_info.models import AcceptTask
 
 
 # Create your views here.
-MAX_PAGE_ITEMS = 2
+MAX_PAGE_ITEMS = 6
 
 def dealResponse(status_code, res_text={}):
     traceback.print_exc()
@@ -40,14 +40,16 @@ def dealResponse(status_code, res_text={}):
     return resp
 
 def operate_task(request):
-    # if not request.method == 'GET' and not request.method == 'POST':
-    #     put = QueryDict(request.body)
-    #     id = put.get('taskID')
-    #     username = put.get('issuer')
-    #     print(put)
-    #     print(id)
-    #     print(username)
-    #     return dealResponse(200) 
+    """
+    if not request.method == 'GET' and not request.method == 'POST':
+        put = QueryDict(request.body)
+        id = put.get('taskID')
+        username = put.get('issuer')
+        print(put)
+        print(id)
+        print(username)
+        return dealResponse(200) 
+    """
     if request.method == 'GET':
         try:
             id = decrypt(request.GET['taskID'])
@@ -92,21 +94,23 @@ def operate_task(request):
                 deadline=tdeadline, )
         task.save()
         return dealResponse(201, {"data":{"taskID":task.taskID}})
-    # elif request.method == 'DELETE':
-    #     try:
-    #         id = decrypt(request.DELETE['taskID'])
-    #         username = decrypt(request.DELETE['issuer'])
-    #     except:
-    #         return dealResponse(400)
-    #     try:
-    #         result = Task.objects.get(taskID=id)
-    #     except Task.DoesNotExist:
-    #         return dealResponse(404)
-    #     if result.issuer.username != username:
-    #         return dealResponse(401) 
-    #     result.isCompleted = True
-    #     result.save()
-        # return dealResponse(200) 
+    """
+    elif request.method == 'DELETE':
+        try:
+            id = decrypt(request.DELETE['taskID'])
+            username = decrypt(request.DELETE['issuer'])
+        except:
+            return dealResponse(400)
+        try:
+            result = Task.objects.get(taskID=id)
+        except Task.DoesNotExist:
+            return dealResponse(404)
+        if result.issuer.username != username:
+            return dealResponse(401) 
+        result.isCompleted = True
+        result.save()
+        return dealResponse(200) 
+    """
 
 def task_finished(request):
     try:

@@ -16,7 +16,7 @@ from accept_task_info.models import AcceptTask
 
 
 # Create your views here.
-MAX_PAGE_ITEMS = 2
+MAX_PAGE_ITEMS = 6
 
 def dealResponse(status_code, res_text={}):
     traceback.print_exc()
@@ -134,7 +134,7 @@ def operate_acceptance(request):
         endid = min(len(result), (page+1)*MAX_PAGE_ITEMS)
         for i in range(startid, endid):
             oner =  {
-            "userID": result[i].user.id,
+            "userID": result[i].user.username, 
             "isFinished": result[i].isFinished, 
             "answer":result[i].answer
         }
@@ -151,7 +151,7 @@ def operate_acceptance(request):
             return dealResponse(400)
         try:
             ntask = Task.objects.get(taskID=ttaskID)
-            nuser = User.objects.get(id=tuserID)
+            nuser = User.objects.get(username=tuserID)
             nissuer = User.objects.get(username=tissuer)
         except(Task.DoesNotExist, User.DoesNotExist):
             return dealResponse(404)
@@ -162,6 +162,12 @@ def operate_acceptance(request):
             return dealResponse(416)
         aptask.isFinished = True
         aptask.save()
+        # if task finish
+        ntask.repeatTime = ntask.repeatTime - 1
+        if ntask.repeatTime <= 0:
+            ntask.repeatTime = 0
+            ntask.isCompleted = True
+        ntask.save()
         return dealResponse(200)
 
 def acceptance_removed(request):

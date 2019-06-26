@@ -11,7 +11,7 @@ from django.db.models import F
 from .crypto import *
 import math
 
-MAX_PAGE_ITEMS = 2
+MAX_PAGE_ITEMS = 6
 
 def dealResponse(status_code, res_text={}):
     traceback.print_exc()
